@@ -3,6 +3,7 @@ const express = require("express");
 const morgan = require("morgan");
 const Tour = require("./models/tourModel");
 const tourRouter = require("./routes/tourRoute");
+const userRouter = require("./routes/userRoute");
 require("dotenv").config(); //reads that .env file, and parses the keys and values
 
 const app = express();
@@ -10,13 +11,27 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // use middleware specially in POST method
 app.use(morgan("dev"));
+
+//rate limit from an IP-address
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+  max: 5, // 🔢 Maximum 100 requests per IP address
+  windowMs: 60 * 60 * 1000, // ⏱️ Time window: 1 hour (in milliseconds)
+  message: "Too many requests from this IP, please try again in an hour!", // 🚫 Error message
+  legacyHeaders: true, //this parameter is responsible to display X-RateLimit-Limit & X-RateLimit-Remaining
+});
+
+// Apply the limiter middleware globally to all routes starting with /api
+app.use("/api", limiter);
+
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
 
 app.use("/api/v1/tours", tourRouter);
-
+app.use("/api/v1/users", userRouter);
 
 const startServer = async () => {
   try {
@@ -66,7 +81,6 @@ const startServer = async () => {
     //   .save() //save or create both okay
     //   .then((e) => console.log("SAVED BOSS"))
     //   .catch((err) => console.log(err));
-
 
     //////////////////////////
 
