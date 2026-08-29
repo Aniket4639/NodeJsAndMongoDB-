@@ -37,7 +37,7 @@ exports.getAllTours = async (req, res) => {
   // const getCollectionData = await Tour.find().lean();
   let queryObj = { ...req.query }; // this will handle even if there is no query
   queryObj = transformQuery(queryObj); // to handle greater or equal than filter, rating[gt]=4.5 gte|gt|lte|lt
-  console.log("Aniket getAllTours", queryObj);
+  // console.log("Aniket getAllTours", queryObj);
   // 2. Advanced: Exclude special API control fields from your database filter
   const excludedFields = ["page", "sort", "limit", "fields"];
   excludedFields.forEach((el) => delete queryObj[el]);
@@ -46,7 +46,7 @@ exports.getAllTours = async (req, res) => {
   console.log("Aniket: finalQuery", queryObj);
   // 3. Execute the Mongoose query with the filter object
   const tours = await Tour.find(queryObj);
-  console.log("Aniket: tours", tours);
+  // console.log("Aniket: tours", tours);
   res.status(200).json({
     status: "success",
     requestedAt: req.requestTime,
